@@ -190,6 +190,7 @@ const EditorWrapper = styled.div`
   textarea {
     transition: all 200ms;
     box-shadow: inset 0 0 30px rgba(0, 0, 0, 0.05);
+    overflow-y: auto;
 
     &::placeholder {
       opacity: 1;
@@ -328,6 +329,8 @@ const PreviewWrapper = styled.div`
   padding: var(--padding);
   padding-bottom: calc(40px + (var(--padding) * 2));
   flex: 1 0;
+  height: 100%;
+  overflow-y: auto;
 `;
 
 const AutoComplete = styled.div`

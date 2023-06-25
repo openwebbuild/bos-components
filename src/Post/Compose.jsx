@@ -1,7 +1,23 @@
+// config
+function getConfig(network) {
+  switch (network) {
+    case "mainnet":
+      return {
+        ownerId: "openwebbuild.near",
+      };
+    case "testnet":
+      return {
+        ownerId: "openwebbuild.testnet",
+      };
+    default:
+      throw Error(`Unconfigured environment '${network}'.`);
+  }
+}
+const config = getConfig(context.networkId);
+
 State.init({
   image: {},
   text: "",
-  showPreview: false,
 });
 
 const profile = Social.getr(`${context.accountId}/profile`);
@@ -90,13 +106,40 @@ function autoCompleteAccountId(id) {
   State.update({ text, showAccountAutocomplete: false });
 }
 
+const TEXT_CACHE_KEY = "text_cache";
+
+function autoSaveContent(event) {
+  Storage.privateSet(TEXT_CACHE_KEY, event.target.value);
+}
+
+function init() {
+  if (!state.text) {
+    const text = Storage.privateGet(TEXT_CACHE_KEY);
+    if (text) {
+      State.update({ text });
+    }
+  }
+}
+
+init();
+
 const Wrapper = styled.div`
   --padding: 24px;
   position: relative;
+  height: 100%;
+  border: 1px lightgrey solid;
+  border-radius: 10px;
 
   @media (max-width: 1200px) {
     --padding: 12px;
   }
+`;
+
+const Container = styled.div`
+  position: relative;
+  height: 100%;
+  display: flex;
+  flex-wrap: wrap;
 `;
 
 const Avatar = styled.div`
@@ -119,22 +162,24 @@ const Avatar = styled.div`
   }
 `;
 
-const Textarea = styled.div`
+const EditorWrapper = styled.div`
   display: grid;
   vertical-align: top;
   align-items: center;
   position: relative;
   align-items: stretch;
+  height: 100%;
+  flex: 1 0;
 
   &::after,
   textarea {
     width: 100%;
     min-width: 1em;
-    height: unset;
+    height: 100%;
     min-height: 164px;
     font: inherit;
     padding: var(--padding) var(--padding) calc(40px + (var(--padding) * 2))
-      calc(40px + (var(--padding) * 2));
+      var(--padding);
     margin: 0;
     resize: none;
     background: none;
@@ -161,6 +206,10 @@ const Textarea = styled.div`
 
   textarea {
     transition: all 200ms;
+    box-shadow: inset 0 0 30px rgba(0, 0, 0, 0.05);
+    overflow-y: auto;
+    font-family: "Roboto Mono", Menlo, Consolas, sans-serif;
+    font-size: 14px;
 
     &::placeholder {
       opacity: 1;
@@ -170,17 +219,13 @@ const Textarea = styled.div`
     &:empty + p {
       display: block;
     }
-
-    &:focus {
-      box-shadow: inset 0 0 30px rgba(0, 0, 0, 0.05);
-    }
   }
 `;
 
-const TextareaDescription = styled.p`
+const EditorDescription = styled.p`
   position: absolute;
-  top: calc(var(--padding) + 24px);
-  left: calc(42px + (var(--padding) * 2));
+  bottom: calc(var(--padding) + 24px);
+  left: var(--padding);
   right: var(--padding);
   font-size: 10px;
   line-height: 18px;
@@ -302,6 +347,9 @@ const PreviewWrapper = styled.div`
   position: relative;
   padding: var(--padding);
   padding-bottom: calc(40px + (var(--padding) * 2));
+  flex: 1 0;
+  height: 100%;
+  overflow-y: auto;
 `;
 
 const AutoComplete = styled.div`
@@ -318,55 +366,40 @@ const AutoComplete = styled.div`
 
 return (
   <Wrapper>
-    {state.showPreview ? (
-      <PreviewWrapper>
+    <Container>
+      <EditorWrapper data-value={state.text} class="col">
+        <textarea
+          placeholder="What's happening?"
+          onInput={(event) => textareaInputHandler(event.target.value)}
+          onKeyUp={(event) => {
+            if (event.key === "Escape") {
+              State.update({ showAccountAutocomplete: false });
+            }
+          }}
+          onChange={autoSaveContent}
+          value={state.text}
+        />
+
+        <EditorDescription>
+          <a href="https://www.markdownguide.org/basic-syntax/" target="_blank">
+            Markdown
+          </a>
+          is supported
+        </EditorDescription>
+      </EditorWrapper>
+      <PreviewWrapper class="col">
         <Widget
-          src="one.testnet/widget/Posts.Post"
+          src={`${config.ownerId}/widget/Post.View`}
           props={{
             accountId: context.accountId,
             blockHeight: "now",
             content,
+            showAvatar: false,
+            showComments: false,
           }}
         />
       </PreviewWrapper>
-    ) : (
-      <>
-        <Avatar>
-          <Widget
-            src="eugenethedream/widget/Image"
-            props={{
-              image: profile.image,
-              alt: profile.name,
-              fallbackUrl:
-                "https://ipfs.near.social/ipfs/bafkreibmiy4ozblcgv3fm3gc6q62s55em33vconbavfd2ekkuliznaq3zm",
-            }}
-          />
-        </Avatar>
-
-        <Textarea data-value={state.text}>
-          <textarea
-            placeholder="What's happening?"
-            onInput={(event) => textareaInputHandler(event.target.value)}
-            onKeyUp={(event) => {
-              if (event.key === "Escape") {
-                State.update({ showAccountAutocomplete: false });
-              }
-            }}
-            value={state.text}
-          />
-
-          <TextareaDescription>
-            <a
-              href="https://www.markdownguide.org/basic-syntax/"
-              target="_blank"
-            >
-              Markdown
-            </a>
-            is supported
-          </TextareaDescription>
-        </Textarea>
-      </>
-    )}
+    </Container>
 
     {autocompleteEnabled && state.showAccountAutocomplete && (
       <AutoComplete>
@@ -382,26 +415,12 @@ return (
     )}
 
     <Actions>
-      {!state.showPreview && (
+      {
         <IpfsImageUpload
           image={state.image}
           className="upload-image-button bi bi-image"
         />
-      )}
-
-      <button
-        type="button"
-        disabled={!state.text}
-        className="preview-post-button"
-        title={state.showPreview ? "Edit Post" : "Preview Post"}
-        onClick={() => State.update({ showPreview: !state.showPreview })}
-      >
-        {state.showPreview ? (
-          <i className="bi bi-pencil" />
-        ) : (
-          <i className="bi bi-eye-fill" />
-        )}
-      </button>
+      }
 
       <CommitButton
         disabled={!state.text}

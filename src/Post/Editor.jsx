@@ -21,7 +21,7 @@ const config = getConfig(context.networkId);
 
 const ComposeWrapper = styled.div`
   border-top: 1px solid #eceef0;
-  height: 100vh;
+  height: 80vh;
 `;
 
 return (

@@ -106,6 +106,23 @@ function autoCompleteAccountId(id) {
   State.update({ text, showAccountAutocomplete: false });
 }
 
+const TEXT_CACHE_KEY = "text_cache";
+
+function autoSaveContent(event) {
+  Storage.privateSet(TEXT_CACHE_KEY, event.target.value);
+}
+
+function init() {
+  if (!state.text) {
+    const text = Storage.privateGet(TEXT_CACHE_KEY);
+    if (text) {
+      State.update({ text });
+    }
+  }
+}
+
+init();
+
 const Wrapper = styled.div`
   --padding: 24px;
   position: relative;
@@ -359,6 +376,7 @@ return (
               State.update({ showAccountAutocomplete: false });
             }
           }}
+          onChange={autoSaveContent}
           value={state.text}
         />
 

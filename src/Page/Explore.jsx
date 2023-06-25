@@ -1,3 +1,20 @@
+// config
+function getConfig(network) {
+  switch (network) {
+    case "mainnet":
+      return {
+        ownerId: "openwebbuild.near",
+      };
+    case "testnet":
+      return {
+        ownerId: "openwebbuild.testnet",
+      };
+    default:
+      throw Error(`Unconfigured environment '${network}'.`);
+  }
+}
+const config = getConfig(context.networkId);
+
 State.init({
   selectedTab: props.tab || "posts",
 });
@@ -59,7 +76,7 @@ return (
         <Widget src="one.testnet/widget/LatestComponents" />
       </Section> */}
       <Section primary active={state.selectedTab === "posts"}>
-        <Widget src="one.testnet/widget/Posts" />
+        <Widget src={`${config.ownerId}/widget/Page.Posts`} />
       </Section>
       <Section active={state.selectedTab === "explore"}>
         <Widget src="one.testnet/widget/ExploreWidgets" />

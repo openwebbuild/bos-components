@@ -16,7 +16,8 @@ function getConfig(network) {
 const config = getConfig(context.networkId);
 
 return (
-  <a href={`/${config.ownerId}/widget/Post.Editor`}>
+  // <a href={`/${config.ownerId}/widget/Post.Editor`}>
+  <a href="/write">
     <button type="button" className="preview-post-button" title="Write Post">
       <i className="bi bi-pencil" />
     </button>

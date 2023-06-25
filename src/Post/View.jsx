@@ -1,3 +1,20 @@
+// config
+function getConfig(network) {
+  switch (network) {
+    case "mainnet":
+      return {
+        ownerId: "openwebbuild.near",
+      };
+    case "testnet":
+      return {
+        ownerId: "openwebbuild.testnet",
+      };
+    default:
+      throw Error(`Unconfigured environment '${network}'.`);
+  }
+}
+const config = getConfig(context.networkId);
+
 const accountId = props.accountId;
 const blockHeight =
   props.blockHeight === "now" ? "now" : parseInt(props.blockHeight);
@@ -108,7 +125,7 @@ return (
       <Content>
         {content.text && (
           <Widget
-            src="one.testnet/widget/SocialMarkdown"
+            src={`${config.ownerId}/widget/Post.Markdown`}
             props={{ text: content.text }}
           />
         )}

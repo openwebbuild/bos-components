@@ -191,6 +191,8 @@ const EditorWrapper = styled.div`
     transition: all 200ms;
     box-shadow: inset 0 0 30px rgba(0, 0, 0, 0.05);
     overflow-y: auto;
+    font-family: "Roboto Mono", Menlo, Consolas, sans-serif;
+    font-size: 14px;
 
     &::placeholder {
       opacity: 1;

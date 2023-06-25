@@ -1,7 +1,23 @@
+// config
+function getConfig(network) {
+  switch (network) {
+    case "mainnet":
+      return {
+        ownerId: "openwebbuild.near",
+      };
+    case "testnet":
+      return {
+        ownerId: "openwebbuild.testnet",
+      };
+    default:
+      throw Error(`Unconfigured environment '${network}'.`);
+  }
+}
+const config = getConfig(context.networkId);
+
 State.init({
   image: {},
   text: "",
-  showPreview: false,
 });
 
 const profile = Social.getr(`${context.accountId}/profile`);
@@ -94,6 +110,8 @@ const Wrapper = styled.div`
   --padding: 24px;
   position: relative;
   height: 100%;
+  border: 1px lightgrey solid;
+  border-radius: 10px;
 
   @media (max-width: 1200px) {
     --padding: 12px;
@@ -348,11 +366,13 @@ return (
       </EditorWrapper>
       <PreviewWrapper class="col">
         <Widget
-          src="one.testnet/widget/Posts.Post"
+          src={`${config.ownerId}/widget/Post.View`}
           props={{
             accountId: context.accountId,
             blockHeight: "now",
             content,
+            showAvatar: false,
+            showComments: false,
           }}
         />
       </PreviewWrapper>
@@ -372,26 +392,12 @@ return (
     )}
 
     <Actions>
-      {!state.showPreview && (
+      {
         <IpfsImageUpload
           image={state.image}
           className="upload-image-button bi bi-image"
         />
-      )}
-
-      <button
-        type="button"
-        disabled={!state.text}
-        className="preview-post-button"
-        title={state.showPreview ? "Edit Post" : "Preview Post"}
-        onClick={() => State.update({ showPreview: !state.showPreview })}
-      >
-        {state.showPreview ? (
-          <i className="bi bi-pencil" />
-        ) : (
-          <i className="bi bi-eye-fill" />
-        )}
-      </button>
+      }
 
       <CommitButton
         disabled={!state.text}

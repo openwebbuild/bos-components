@@ -4,10 +4,12 @@ function getConfig(network) {
     case "mainnet":
       return {
         ownerId: "openwebbuild.near",
+        discoveryAccountId: "near",
       };
     case "testnet":
       return {
         ownerId: "openwebbuild.testnet",
+        discoveryAccountId: "one.testnet",
       };
     default:
       throw Error(`Unconfigured environment '${network}'.`);
@@ -72,14 +74,14 @@ return (
   <Wrapper negativeMargin={state.selectedTab === "posts"}>
     <Main>
       {/* <Section active={state.selectedTab === "apps"}>
-        <Widget src="one.testnet/widget/FeaturedComponents" />
-        <Widget src="one.testnet/widget/LatestComponents" />
+        <Widget src={`${config.discoveryAccountId}/widget/FeaturedComponents`} />
+        <Widget src={`${config.discoveryAccountId}/widget/LatestComponents`} />
       </Section> */}
       <Section primary active={state.selectedTab === "posts"}>
         <Widget src={`${config.ownerId}/widget/Page.Posts`} />
       </Section>
       <Section active={state.selectedTab === "explore"}>
-        <Widget src="one.testnet/widget/ExploreWidgets" />
+        <Widget src={`${config.discoveryAccountId}/widget/ExploreWidgets`} />
       </Section>
     </Main>
   </Wrapper>

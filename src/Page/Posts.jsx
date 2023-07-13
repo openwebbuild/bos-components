@@ -1,3 +1,21 @@
+function getConfig(network) {
+  switch (network) {
+    case "mainnet":
+      return {
+        ownerId: "openwebbuild.near",
+        discoveryAccountId: "near",
+      };
+    case "testnet":
+      return {
+        ownerId: "openwebbuild.testnet",
+        discoveryAccountId: "one.testnet",
+      };
+    default:
+      throw Error(`Unconfigured environment '${network}'.`);
+  }
+}
+const config = getConfig(context.networkId);
+
 State.init({
   selectedTab: Storage.privateGet("selectedTab") || "all",
 });
@@ -131,7 +149,9 @@ return (
         <>
           {props.compose && (
             <ComposeWrapper>
-              <Widget src="one.testnet/widget/Posts.Compose" />
+              <Widget
+                src={`${config.discoveryAccountId}/widget/Posts.Compose`}
+              />
             </ComposeWrapper>
           )}
 
@@ -158,7 +178,10 @@ return (
       )}
 
       <FeedWrapper>
-        <Widget src="one.testnet/widget/Posts.Feed" props={{ accounts }} />
+        <Widget
+          src={`${config.ownerId}/widget/Post.Feed`}
+          props={{ accounts }}
+        />
       </FeedWrapper>
     </Content>
   </>

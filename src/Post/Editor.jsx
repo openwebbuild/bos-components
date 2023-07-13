@@ -6,12 +6,12 @@ function getConfig(network) {
     case "mainnet":
       return {
         ownerId: "openwebbuild.near",
-        nodeUrl: "https://rpc.mainnet.near.org",
+        discoveryAccountId: "near",
       };
     case "testnet":
       return {
         ownerId: "openwebbuild.testnet",
-        nodeUrl: "https://rpc.testnet.near.org",
+        discoveryAccountId: "one.testnet",
       };
     default:
       throw Error(`Unconfigured environment '${network}'.`);

@@ -46,7 +46,7 @@ if (commentBlockHeight) {
 if (parentPost) {
   return (
     <Widget
-      src={`${config.discoveryAccountId}/widget/Posts.Post`}
+      src={`${config.ownerId}/widget/Post.View`}
       props={{
         ...parentPost,
         highlightComment: { accountId, blockHeight: commentBlockHeight },
@@ -60,7 +60,7 @@ if (parentPost) {
 
 return (
   <Widget
-    src={`${config.discoveryAccountId}/widget/Posts.Post`}
+    src={`${config.ownerId}/widget/Post.View`}
     props={{ ...props, commentsLimit: 30, subscribe: true }}
   />
 );

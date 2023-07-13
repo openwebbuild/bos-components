@@ -70,6 +70,10 @@ const Wrapper = styled.div`
   }
 `;
 
+const Embedded = styled.div`
+  white-space: normal;
+`;
+
 const renderMention =
   props.renderMention ??
   ((accountId) => (
@@ -83,8 +87,31 @@ const renderMention =
     />
   ));
 
+const renderWidget =
+  props.renderWidget ??
+  (({ src, props }) => (
+    <Embedded className="embedded-widget">
+      <Widget
+        key={
+          src + props
+            ? "?" +
+              Object.entries(props)
+                .map((p) => p.join("="))
+                .join("&")
+            : ""
+        }
+        src={src}
+        props={props}
+      />
+    </Embedded>
+  ));
+
 return (
   <Wrapper>
-    <Markdown text={props.text} onMention={renderMention} />
+    <Markdown
+      text={props.text}
+      onMention={renderMention}
+      onWidget={renderWidget}
+    />
   </Wrapper>
 );

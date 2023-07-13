@@ -6,7 +6,9 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "prepare": "husky install",
     "start:testnet": "APP_TESTNET_URL=https://test.near.org/openwebbuild.testnet/widget/Post.Editor && open $APP_TESTNET_URL && echo \"Preview at: $APP_TESTNET_URL\"",
-    "dev": "yarn start:testnet && bos-loader openwebbuild.testnet --path src"
+    "start:mainnet": "APP_MAINNET_URL=https://openweb.build/openwebbuild.near/widget/Post.Editor && open $APP_MAINNET_URL && echo \"Preview at: $APP_MAINNET_URL\"",
+    "dev": "yarn start:testnet && bos-loader openwebbuild.testnet --path src",
+    "preview": "yarn start:mainnet && bos-loader openwebbuild.near --path src"
   },
   "repository": {
     "type": "git",

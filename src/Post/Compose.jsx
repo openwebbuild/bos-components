@@ -4,10 +4,12 @@ function getConfig(network) {
     case "mainnet":
       return {
         ownerId: "openwebbuild.near",
+        discoveryAccountId: "near",
       };
     case "testnet":
       return {
         ownerId: "openwebbuild.testnet",
+        discoveryAccountId: "one.testnet",
       };
     default:
       throw Error(`Unconfigured environment '${network}'.`);
@@ -404,7 +406,7 @@ return (
     {autocompleteEnabled && state.showAccountAutocomplete && (
       <AutoComplete>
         <Widget
-          src="one.testnet/widget/AccountAutocomplete"
+          src={`${config.discoveryAccountId}/widget/AccountAutocomplete`}
           props={{
             term: state.text.split("@").pop(),
             onSelect: autoCompleteAccountId,

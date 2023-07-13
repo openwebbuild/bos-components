@@ -1,3 +1,22 @@
+// config
+function getConfig(network) {
+  switch (network) {
+    case "mainnet":
+      return {
+        ownerId: "openwebbuild.near",
+        discoveryAccountId: "near",
+      };
+    case "testnet":
+      return {
+        ownerId: "openwebbuild.testnet",
+        discoveryAccountId: "one.testnet",
+      };
+    default:
+      throw Error(`Unconfigured environment '${network}'.`);
+  }
+}
+const config = getConfig(context.networkId);
+
 const accountId = props.accountId;
 const profile = props.profile || Social.get(`${accountId}/profile/**`, "final");
 
@@ -64,7 +83,9 @@ const Avatar = styled.div`
 `;
 
 const AccountProfile = (
-  <Wrapper href={`/#/one.testnet/widget/ProfilePage?accountId=${accountId}`}>
+  <Wrapper
+    href={`/#/${config.discoveryAccountId}/widget/ProfilePage?accountId=${accountId}`}
+  >
     {!props.hideAvatar && (
       <Avatar>
         <Widget
@@ -87,7 +108,7 @@ if (props.noOverlay) return AccountProfile;
 
 return (
   <Widget
-    src="one.testnet/widget/AccountProfileOverlay"
+    src={`${config.discoveryAccountId}/widget/AccountProfileOverlay`}
     props={{
       accountId: props.accountId,
       profile,

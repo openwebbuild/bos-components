@@ -4,10 +4,12 @@ function getConfig(network) {
     case "mainnet":
       return {
         ownerId: "openwebbuild.near",
+        discoveryAccountId: "near",
       };
     case "testnet":
       return {
         ownerId: "openwebbuild.testnet",
+        discoveryAccountId: "one.testnet",
       };
     default:
       throw Error(`Unconfigured environment '${network}'.`);

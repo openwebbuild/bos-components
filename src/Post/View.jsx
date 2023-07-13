@@ -4,10 +4,14 @@ function getConfig(network) {
     case "mainnet":
       return {
         ownerId: "openwebbuild.near",
+        discoveryAccountId: "near",
+        gatewayDomain: "near.org",
       };
     case "testnet":
       return {
         ownerId: "openwebbuild.testnet",
+        discoveryAccountId: "one.testnet",
+        gatewayDomain: "test.near.org",
       };
     default:
       throw Error(`Unconfigured environment '${network}'.`);
@@ -20,7 +24,7 @@ const blockHeight =
   props.blockHeight === "now" ? "now" : parseInt(props.blockHeight);
 const subscribe = !!props.subscribe;
 const notifyAccountId = accountId;
-const postUrl = `https://alpha.testnet.near.org/#/one.testnet/widget/PostPage?accountId=${accountId}&blockHeight=${blockHeight}`;
+const postUrl = `https://${config.gatewayDomain}/${config.discoveryAccountId}/widget/PostPage?accountId=${accountId}&blockHeight=${blockHeight}`;
 
 const content =
   props.content ??
@@ -94,7 +98,7 @@ return (
     {props.showAvatar && (
       <Header>
         <Widget
-          src="one.testnet/widget/AccountProfile"
+          src={`${config.discoveryAccountId}/widget/AccountProfile`}
           props={{
             accountId,
             hideAccountId: true,
@@ -107,7 +111,7 @@ return (
                   ) : (
                     <>
                       <Widget
-                        src="one.testnet/widget/TimeAgo"
+                        src={`${config.discoveryAccountId}/widget/TimeAgo`}
                         props={{ blockHeight }}
                       />{" "}
                       ago
@@ -143,21 +147,21 @@ return (
       {blockHeight !== "now" && (
         <Actions>
           <Widget
-            src="one.testnet/widget/LikeButton"
+            src={`${config.discoveryAccountId}/widget/LikeButton`}
             props={{
               item,
               notifyAccountId,
             }}
           />
           <Widget
-            src="one.testnet/widget/CommentButton"
+            src={`${config.discoveryAccountId}/widget/CommentButton`}
             props={{
               item,
               onClick: () => State.update({ showReply: !state.showReply }),
             }}
           />
           <Widget
-            src="one.testnet/widget/CopyUrlButton"
+            src={`${config.discoveryAccountId}/widget/CopyUrlButton`}
             props={{
               url: postUrl,
             }}
@@ -168,7 +172,7 @@ return (
       {state.showReply && (
         <div className="mb-2">
           <Widget
-            src="one.testnet/widget/Comments.Compose"
+            src={`${config.discoveryAccountId}/widget/Comments.Compose`}
             props={{
               notifyAccountId,
               item,
@@ -181,7 +185,7 @@ return (
       {props.showComments && (
         <Comments>
           <Widget
-            src="one.testnet/widget/Comments.Feed"
+            src={`${config.discoveryAccountId}/widget/Comments.Feed`}
             props={{
               item,
               highlightComment: props.highlightComment,

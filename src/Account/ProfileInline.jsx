@@ -5,11 +5,13 @@ function getConfig(network) {
       return {
         ownerId: "openwebbuild.near",
         discoveryAccountId: "near",
+        eugeneId: "mob.near",
       };
     case "testnet":
       return {
         ownerId: "openwebbuild.testnet",
         discoveryAccountId: "one.testnet",
+        eugeneId: "eugenethedream",
       };
     default:
       throw Error(`Unconfigured environment '${network}'.`);
@@ -89,7 +91,7 @@ const AccountProfile = (
     {!props.hideAvatar && (
       <Avatar>
         <Widget
-          src="eugenethedream/widget/Image"
+          src={`${config.eugeneId}/widget/Image`}
           props={{
             image: profile.image,
             alt: profile.name,

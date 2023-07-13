@@ -5,13 +5,13 @@ function getConfig(network) {
       return {
         ownerId: "openwebbuild.near",
         discoveryAccountId: "near",
-        gatewayDomain: "near.org",
+        eugeneId: "mob.near",
       };
     case "testnet":
       return {
         ownerId: "openwebbuild.testnet",
         discoveryAccountId: "one.testnet",
-        gatewayDomain: "test.near.org",
+        eugeneId: "eugenethedream",
       };
     default:
       throw Error(`Unconfigured environment '${network}'.`);
@@ -136,7 +136,7 @@ return (
 
         {content.image && (
           <Widget
-            src="eugenethedream/widget/Image"
+            src={`${config.eugeneId}/widget/Image`}
             props={{
               image: content.image,
             }}

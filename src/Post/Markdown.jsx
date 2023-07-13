@@ -70,6 +70,10 @@ const Wrapper = styled.div`
   }
 `;
 
+const Embedded = styled.div`
+  white-space: normal;
+`;
+
 const renderMention =
   props.renderMention ??
   ((accountId) => (
@@ -86,18 +90,20 @@ const renderMention =
 const renderWidget =
   props.renderWidget ??
   (({ src, props }) => (
-    <Widget
-      key={
-        src + props
-          ? "?" +
-            Object.entries(props)
-              .map((p) => p.join("="))
-              .join("&")
-          : ""
-      }
-      src={src}
-      props={props}
-    />
+    <Embedded className="embedded-widget">
+      <Widget
+        key={
+          src + props
+            ? "?" +
+              Object.entries(props)
+                .map((p) => p.join("="))
+                .join("&")
+            : ""
+        }
+        src={src}
+        props={props}
+      />
+    </Embedded>
   ));
 
 return (

@@ -83,8 +83,29 @@ const renderMention =
     />
   ));
 
+const renderWidget =
+  props.renderWidget ??
+  (({ src, props }) => (
+    <Widget
+      key={
+        src + props
+          ? "?" +
+            Object.entries(props)
+              .map((p) => p.join("="))
+              .join("&")
+          : ""
+      }
+      src={src}
+      props={props}
+    />
+  ));
+
 return (
   <Wrapper>
-    <Markdown text={props.text} onMention={renderMention} />
+    <Markdown
+      text={props.text}
+      onMention={renderMention}
+      onWidget={renderWidget}
+    />
   </Wrapper>
 );

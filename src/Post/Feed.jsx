@@ -45,6 +45,7 @@ const renderItem = (a) =>
           accountId: a.accountId,
           blockHeight: a.blockHeight,
           showAvatar: true,
+          showComments: true,
         }}
       />
     </Post>

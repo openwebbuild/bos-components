@@ -74,6 +74,10 @@ const Wrapper = styled.div`
 
 const Embedded = styled.span`
   white-space: normal;
+
+  p {
+    white-space: normal;
+  }
 `;
 
 const renderMention =

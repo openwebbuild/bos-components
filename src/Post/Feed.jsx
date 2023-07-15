@@ -41,7 +41,11 @@ const renderItem = (a) =>
     <Post className="post" key={JSON.stringify(a)}>
       <Widget
         src={`${config.ownerId}/widget/Post.View`}
-        props={{ accountId: a.accountId, blockHeight: a.blockHeight }}
+        props={{
+          accountId: a.accountId,
+          blockHeight: a.blockHeight,
+          showAvatar: true,
+        }}
       />
     </Post>
   );

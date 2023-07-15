@@ -24,7 +24,7 @@ const blockHeight =
   props.blockHeight === "now" ? "now" : parseInt(props.blockHeight);
 const subscribe = !!props.subscribe;
 const notifyAccountId = accountId;
-const postUrl = `https://${config.gatewayDomain}/${config.discoveryAccountId}/widget/PostPage?accountId=${accountId}&blockHeight=${blockHeight}`;
+const postUrl = `https://${config.gatewayDomain}/${config.ownerId}/widget/Page.Post?accountId=${accountId}&blockHeight=${blockHeight}`;
 
 const content =
   props.content ??
@@ -44,7 +44,7 @@ const Post = styled.div`
     display: block;
     position: absolute;
     left: 19px;
-    top: 0px;
+    top: ${props.showAvatar ? "52px" : "0px"};
     bottom: 12px;
     width: 2px;
     background: #eceef0;

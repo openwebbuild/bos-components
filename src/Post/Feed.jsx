@@ -44,8 +44,6 @@ const renderItem = (a) =>
         props={{
           accountId: a.accountId,
           blockHeight: a.blockHeight,
-          showAvatar: true,
-          showComments: true,
         }}
       />
     </Post>

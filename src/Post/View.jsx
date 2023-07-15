@@ -44,7 +44,7 @@ const Post = styled.div`
     display: block;
     position: absolute;
     left: 19px;
-    top: ${props.showAvatar ? "52px" : "0px"};
+    top: ${props.hideAvatar ? "0px" : "52px"};
     bottom: 12px;
     width: 2px;
     background: #eceef0;
@@ -95,7 +95,7 @@ const Comments = styled.div`
 
 return (
   <Post>
-    {props.showAvatar && (
+    {!props.hideAvatar && (
       <Header>
         <Widget
           src={`${config.discoveryAccountId}/widget/AccountProfile`}
@@ -111,7 +111,11 @@ return (
                   ) : (
                     <>
                       <Widget
-                        src={`${config.discoveryAccountId}/widget/TimeAgo`}
+                        src={`${
+                          context.networkId === "mainnet"
+                            ? "mob.near"
+                            : "one.testnet"
+                        }/widget/TimeAgo`}
                         props={{ blockHeight }}
                       />{" "}
                       ago
@@ -182,7 +186,7 @@ return (
         </div>
       )}
 
-      {props.showComments && (
+      {!props.hideComments && (
         <Comments>
           <Widget
             src={`${config.discoveryAccountId}/widget/Comments.Feed`}

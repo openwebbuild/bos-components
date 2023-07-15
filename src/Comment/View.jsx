@@ -179,7 +179,7 @@ return (
               url: commentUrl,
             }}
           />
-          <Widget
+          {/* <Widget
             src={`${config.discoveryAccountId}/widget/ShareButton`}
             props={{
               postType: "comment",
@@ -198,7 +198,7 @@ return (
                 State.update({ hasBeenFlagged: true });
               },
             }}
-          />
+          /> */}
         </Actions>
       )}
 

@@ -3,14 +3,14 @@ function getConfig(network) {
   switch (network) {
     case "mainnet":
       return {
-        gatewayDomain: "openweb.bulid",
+        gatewayDomain: "openweb.build",
         ownerId: "openwebbuild.near",
         discoveryAccountId: "near",
         eugeneId: "mob.near",
       };
     case "testnet":
       return {
-        gatewayDomain: "dev.openweb.bulid",
+        gatewayDomain: "dev.openweb.build",
         ownerId: "openwebbuild.testnet",
         discoveryAccountId: "one.testnet",
         eugeneId: "eugenethedream",

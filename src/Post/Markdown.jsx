@@ -93,6 +93,7 @@ const renderWidget =
   props.renderWidget ??
   // URL pattern: scheme://authority@path?query#fragment
   (({ url, scheme, authority, path, query }) => {
+    // widget URL now allows "bos" and "near" schemes
     if (url && ["bos", "near"].includes(scheme) && authority && path) {
       const location = authority + path;
       const segments = location.split("/");
@@ -109,7 +110,7 @@ const renderWidget =
         );
       }
     }
-    // If not an expected widget URL, return the original URL
+    // If not a valid widget URL, return the original URL
     return url;
   });
 

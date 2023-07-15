@@ -86,7 +86,7 @@ const Avatar = styled.div`
 
 const AccountProfile = (
   <Wrapper
-    href={`/#/${config.discoveryAccountId}/widget/ProfilePage?accountId=${accountId}`}
+    href={`/#/${config.ownerId}/widget/Page.Profile?accountId=${accountId}`}
   >
     {!props.hideAvatar && (
       <Avatar>

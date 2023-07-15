@@ -105,7 +105,7 @@ return (
   <Comment>
     <Header>
       <Widget
-        src={`${config.discoveryAccountId}/widget/AccountProfile`}
+        src={`${config.ownerId}/widget/Account.Profile`}
         props={{
           accountId,
           avatarSize: "32px",

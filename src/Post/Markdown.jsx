@@ -91,7 +91,7 @@ const renderMention =
 
 const renderWidget =
   props.renderWidget ??
-  // URL pattern: scheme://authority@path?query#fragment
+  // URL pattern: scheme://authority/path?query#fragment
   (({ url, scheme, authority, path, query }) => {
     // widget URL now allows "bos" and "near" schemes
     if (url && ["bos", "near"].includes(scheme) && authority && path) {

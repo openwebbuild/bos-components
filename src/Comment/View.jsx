@@ -24,42 +24,46 @@ const config = getConfig(context.networkId);
 const accountId = props.accountId;
 const blockHeight =
   props.blockHeight === "now" ? "now" : parseInt(props.blockHeight);
-const subscribe = !!props.subscribe;
-const notifyAccountId = accountId;
-const postUrl = `https://${config.gatewayDomain}/${config.ownerId}/widget/Page.Post?accountId=${accountId}&blockHeight=${blockHeight}`;
-
 const content =
   props.content ??
-  JSON.parse(Social.get(`${accountId}/post/main`, blockHeight) ?? "null");
+  JSON.parse(Social.get(`${accountId}/post/comment`, blockHeight) ?? "null");
+const parentItem = content.item;
+const highlight = !!props.highlight;
+const raw = !!props.raw;
+const commentUrl = `${config.gatewayDomain}/s/c?a=${accountId}&b=${blockHeight}`;
 
-const item = {
-  type: "social",
-  path: `${accountId}/post/main`,
-  blockHeight,
+State.init({ hasBeenFlagged: false });
+
+const extractNotifyAccountId = (parentItem) => {
+  if (!parentItem || parentItem.type !== "social" || !parentItem.path) {
+    return undefined;
+  }
+  const accountId = parentItem.path.split("/")[0];
+  return `${accountId}/post/main` === parentItem.path ? accountId : undefined;
 };
 
-const Post = styled.div`
+const Comment = styled.div`
   position: relative;
 
   &::before {
     content: "";
     display: block;
     position: absolute;
-    left: 19px;
-    top: ${props.hideAvatar ? "0px" : "52px"};
+    left: 15px;
+    top: 44px;
     bottom: 12px;
     width: 2px;
-    background: #eceef0;
+    background: ${props.highlight ? "#006ADC" : "#ECEEF0"};
   }
 `;
 
 const Header = styled.div`
-  margin-bottom: 0;
   display: inline-flex;
+  margin-bottom: 0;
 `;
 
-const Body = styled.div`
-  padding-left: 52px;
+const Main = styled.div`
+  padding-left: 44px;
   padding-bottom: 1px;
 `;
 
@@ -89,49 +93,48 @@ const Actions = styled.div`
   margin: -6px -6px 6px;
 `;
 
-const Comments = styled.div`
-  > div > div:first-child {
-    padding-top: 12px;
-  }
-`;
+if (state.hasBeenFlagged) {
+  return (
+    <div className="alert alert-secondary">
+      <i className="bi bi-flag" /> This content has been flagged for moderation
+    </div>
+  );
+}
 
 return (
-  <Post>
-    {!props.hideAvatar && (
-      <Header>
-        <Widget
-          src={`${config.discoveryAccountId}/widget/AccountProfile`}
-          props={{
-            accountId,
-            hideAccountId: true,
-            inlineContent: (
-              <>
-                <Text as="span">･</Text>
+  <Comment>
+    <Header>
+      <Widget
+        src={`${config.discoveryAccountId}/widget/AccountProfile`}
+        props={{
+          accountId,
+          avatarSize: "32px",
+          hideAccountId: true,
+          inlineContent: (
+            <>
+              <Text as="span">･</Text>
+              {blockHeight === "now" ? (
+                "now"
+              ) : (
                 <Text>
-                  {blockHeight === "now" ? (
-                    "now"
-                  ) : (
-                    <>
-                      <Widget
-                        src={`${
-                          context.networkId === "mainnet"
-                            ? "mob.near"
-                            : "one.testnet"
-                        }/widget/TimeAgo`}
-                        props={{ blockHeight }}
-                      />{" "}
-                      ago
-                    </>
-                  )}
+                  <Widget
+                    src={`${
+                      context.networkId === "mainnet"
+                        ? "mob.near"
+                        : "one.testnet"
+                    }/widget/TimeAgo`}
+                    props={{ blockHeight }}
+                  />{" "}
+                  ago
                 </Text>
-              </>
-            ),
-          }}
-        />
-      </Header>
-    )}
+              )}
+            </>
+          ),
+        }}
+      />
+    </Header>
 
-    <Body>
+    <Main>
       <Content>
         {content.text && (
           <Widget
@@ -155,23 +158,47 @@ return (
           <Widget
             src={`${config.discoveryAccountId}/widget/LikeButton`}
             props={{
-              item,
+              item: {
+                type: "social",
+                path: `${accountId}/post/comment`,
+                blockHeight,
+              },
               notifyAccountId,
             }}
           />
           <Widget
             src={`${config.discoveryAccountId}/widget/CommentButton`}
             props={{
-              item,
+              hideCount: true,
               onClick: () => State.update({ showReply: !state.showReply }),
             }}
           />
           <Widget
             src={`${config.discoveryAccountId}/widget/CopyUrlButton`}
             props={{
-              url: postUrl,
+              url: commentUrl,
             }}
           />
+          {/* <Widget
+            src={`${config.discoveryAccountId}/widget/ShareButton`}
+            props={{
+              postType: "comment",
+              url: commentUrl,
+            }}
+          />
+          <Widget
+            src={`${config.discoveryAccountId}/widget/FlagButton`}
+            props={{
+              item: {
+                type: "social",
+                path: `${accountId}/post/comment`,
+                blockHeight,
+              },
+              onFlag: () => {
+                State.update({ hasBeenFlagged: true });
+              },
+            }}
+          /> */}
         </Actions>
       )}
 
@@ -180,28 +207,14 @@ return (
           <Widget
             src={`${config.discoveryAccountId}/widget/Comments.Compose`}
             props={{
-              notifyAccountId,
-              item,
+              initialText: `@${accountId}, `,
+              notifyAccountId: extractNotifyAccountId(parentItem),
+              item: parentItem,
               onComment: () => State.update({ showReply: false }),
             }}
           />
         </div>
       )}
-
-      {!props.hideComments && (
-        <Comments>
-          <Widget
-            src={`${config.ownerId}/widget/Comment.Feed`}
-            props={{
-              item,
-              highlightComment: props.highlightComment,
-              limit: props.commentsLimit,
-              subscribe,
-              raw,
-            }}
-          />
-        </Comments>
-      )}
-    </Body>
-  </Post>
+    </Main>
+  </Comment>
 );

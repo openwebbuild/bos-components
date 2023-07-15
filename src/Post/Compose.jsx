@@ -396,8 +396,8 @@ return (
             accountId: context.accountId,
             blockHeight: "now",
             content,
-            showAvatar: false,
-            showComments: false,
+            hideAvatar: true,
+            hideComments: true,
           }}
         />
       </PreviewWrapper>

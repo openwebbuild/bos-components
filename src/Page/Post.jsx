@@ -43,24 +43,52 @@ if (commentBlockHeight) {
   parentPost = extractParentPost(content.item);
 }
 
+const Layout = styled.div`
+  display: flex;
+  justify-content: center;
+  box-sizing: inherit;
+`;
+
+const Content = styled.div`
+  min-width: 0;
+  max-width: 680px;
+  width: 100%;
+  margin: 0 24px;
+  box-sizing: inherit;
+`;
+
 if (parentPost) {
   return (
-    <Widget
-      src={`${config.ownerId}/widget/Post.View`}
-      props={{
-        ...parentPost,
-        highlightComment: { accountId, blockHeight: commentBlockHeight },
-        commentsLimit: 30,
-        subscribe: true,
-        raw: props.raw,
-      }}
-    />
+    <Layout>
+      <Content>
+        <Widget
+          src={`${config.ownerId}/widget/Post.View`}
+          props={{
+            ...parentPost,
+            highlightComment: { accountId, blockHeight: commentBlockHeight },
+            commentsLimit: 30,
+            subscribe: true,
+            raw: props.raw,
+            hideBorder: true,
+          }}
+        />
+      </Content>
+    </Layout>
   );
 }
 
 return (
-  <Widget
-    src={`${config.ownerId}/widget/Post.View`}
-    props={{ ...props, commentsLimit: 30, subscribe: true }}
-  />
+  <Layout>
+    <Content>
+      <Widget
+        src={`${config.ownerId}/widget/Post.View`}
+        props={{
+          ...props,
+          commentsLimit: 30,
+          subscribe: true,
+          hideBorder: true,
+        }}
+      />
+    </Content>
+  </Layout>
 );

@@ -43,7 +43,7 @@ const Post = styled.div`
 
   &::before {
     content: "";
-    display: block;
+    display: ${props.hideBorder ? "none" : "block"};
     position: absolute;
     left: 19px;
     top: ${props.hideAvatar ? "0px" : "52px"};
@@ -59,7 +59,7 @@ const Header = styled.div`
 `;
 
 const Body = styled.div`
-  padding-left: 52px;
+  padding-left: ${props.hideBorder ? "0px" : "52px"};
   padding-bottom: 1px;
 `;
 
@@ -70,6 +70,7 @@ const Content = styled.div`
     max-height: 80vh;
     margin: 0 0 12px;
   }
+  margin: 24px 0;
 `;
 
 const Text = styled.p`

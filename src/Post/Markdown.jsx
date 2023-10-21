@@ -26,6 +26,9 @@ const Wrapper = styled.div`
   color: #242424;
   word-break: break-word;
 
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+
   > * {
     margin-bottom: 12px;
   }
@@ -68,15 +71,9 @@ const Wrapper = styled.div`
   }
 
   a {
-    color: #006adc;
+    color: inherit;
     outline: none;
-    font-weight: 600;
-
-    &:hover,
-    &:focus {
-      color: #006adc;
-      text-decoration: underline;
-    }
+    text-decoration: underline;
   }
 
   img {

@@ -43,7 +43,7 @@ const Post = styled.div`
 
   &::before {
     content: "";
-    display: block;
+    display: ${props.hideBorder ? "none" : "block"};
     position: absolute;
     left: 19px;
     top: ${props.hideAvatar ? "0px" : "52px"};
@@ -70,6 +70,7 @@ const Content = styled.div`
     max-height: 80vh;
     margin: 0 0 12px;
   }
+  margin-bottom: 24px;
 `;
 
 const Text = styled.p`

@@ -70,6 +70,11 @@ const Wrapper = styled.div`
     margin-bottom: -0.46em;
   }
 
+  p:first-child {
+    margin-top: 0.46em;
+    margin-bottom: -0.46em;
+  }
+
   a {
     color: inherit;
     outline: none;

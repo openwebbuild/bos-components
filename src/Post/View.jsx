@@ -59,7 +59,7 @@ const Header = styled.div`
 `;
 
 const Body = styled.div`
-  padding-left: 52px;
+  padding-left: ${props.hideBorder ? "0px" : "52px"};
   padding-bottom: 1px;
 `;
 
@@ -70,7 +70,7 @@ const Content = styled.div`
     max-height: 80vh;
     margin: 0 0 12px;
   }
-  margin-bottom: 24px;
+  margin: 24px 0;
 `;
 
 const Text = styled.p`

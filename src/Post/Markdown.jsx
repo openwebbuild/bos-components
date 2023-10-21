@@ -86,6 +86,10 @@ const Wrapper = styled.div`
     max-width: 100%;
     max-height: 80vh;
   }
+
+  hr {
+    margin: 3em 0;
+  }
 `;
 
 const Embedded = styled.span`

@@ -27,7 +27,7 @@ function parseTitle(text) {
   }
 }
 
-function parsePermlink(title) {
+function parsePermalink(title) {
   if (title) {
     return title
       .toLowerCase()
@@ -42,21 +42,22 @@ State.init({
   image: {},
   text: "",
   title: "",
-  permlink: "",
+  permalink: "",
 });
 
 const profile = Social.getr(`${context.accountId}/profile`);
 const autocompleteEnabled = true;
 
 const title = parseTitle(state.text);
-const permlink = parsePermlink(title);
+// If the post already exists with the permalink, it's not allowed to change it.
+const permalink = props.permalink || parsePermalink(title);
 
 const content = {
   type: "md",
   image: state.image.cid ? { ipfs_cid: state.image.cid } : undefined,
   text: state.text,
   title,
-  permlink,
+  permalink,
 };
 
 function extractMentions(text) {

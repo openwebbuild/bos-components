@@ -17,18 +17,46 @@ function getConfig(network) {
 }
 const config = getConfig(context.networkId);
 
+function parseTitle(text) {
+  let title = text.split("\n")[0];
+  if (title && title.startsWith("# ")) {
+    title = title.slice(2).trim();
+    return title;
+  } else {
+    return "";
+  }
+}
+
+function parsePermlink(title) {
+  if (title) {
+    return title
+      .toLowerCase()
+      .replace(/\s+/g, "-")
+      .replace(/[^\w-]+/g, "");
+  } else {
+    return "";
+  }
+}
+
 State.init({
   image: {},
   text: "",
+  title: "",
+  permlink: "",
 });
 
 const profile = Social.getr(`${context.accountId}/profile`);
 const autocompleteEnabled = true;
 
+const title = parseTitle(state.text);
+const permlink = parsePermlink(title);
+
 const content = {
   type: "md",
   image: state.image.cid ? { ipfs_cid: state.image.cid } : undefined,
   text: state.text,
+  title,
+  permlink,
 };
 
 function extractMentions(text) {

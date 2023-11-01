@@ -17,18 +17,47 @@ function getConfig(network) {
 }
 const config = getConfig(context.networkId);
 
+function parseTitle(text) {
+  let title = text.split("\n")[0];
+  if (title && title.startsWith("# ")) {
+    title = title.slice(2).trim();
+    return title;
+  } else {
+    return "";
+  }
+}
+
+function parsePermalink(title) {
+  if (title) {
+    return title
+      .toLowerCase()
+      .replace(/\s+/g, "-")
+      .replace(/[^\w-]+/g, "");
+  } else {
+    return "";
+  }
+}
+
 State.init({
   image: {},
   text: "",
+  title: "",
+  permalink: "",
 });
 
 const profile = Social.getr(`${context.accountId}/profile`);
 const autocompleteEnabled = true;
 
+const title = parseTitle(state.text);
+// If the post already exists with the permalink, it's not allowed to change it.
+const permalink = props.permalink || parsePermalink(title);
+
 const content = {
   type: "md",
   image: state.image.cid ? { ipfs_cid: state.image.cid } : undefined,
   text: state.text,
+  title,
+  permalink,
 };
 
 function extractMentions(text) {

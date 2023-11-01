@@ -22,6 +22,7 @@ function getConfig(network) {
 const config = getConfig(context.networkId);
 
 const accountId = props.accountId;
+const permalink = props.permalink;
 const blockHeight =
   props.blockHeight === "now" ? "now" : parseInt(props.blockHeight);
 const subscribe = !!props.subscribe;
@@ -35,7 +36,7 @@ const content =
 const item = {
   type: "social",
   path: `${accountId}/post/main`,
-  blockHeight,
+  permalink,
 };
 
 const Post = styled.div`

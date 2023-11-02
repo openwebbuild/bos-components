@@ -22,12 +22,11 @@ function getConfig(network) {
 const config = getConfig(context.networkId);
 
 const accountId = props.accountId;
-const permalink = props.permalink;
+let permalink = props.permalink;
 let blockHeight =
   props.blockHeight === "now" ? "now" : parseInt(props.blockHeight);
 const subscribe = !!props.subscribe;
 const notifyAccountId = accountId;
-const postUrl = `https://${config.gatewayDomain}/${config.ownerId}/widget/Page.Post?accountId=${accountId}&blockHeight=${blockHeight}`;
 
 function queryPostByBlockHeight(accountId, blockHeight) {
   return JSON.parse(
@@ -67,9 +66,15 @@ const content =
     : accountId && blockHeight
     ? queryPostByBlockHeight(accountId, blockHeight)
     : null);
+
 if (!blockHeight && content) {
   blockHeight = content.blockHeight;
 }
+if (!permalink && content) {
+  permalink = content.permalink;
+}
+
+const postUrl = `https://${config.gatewayDomain}/${config.ownerId}/widget/Page.Post?accountId=${accountId}&permalink=${permalink}`;
 
 const item = {
   type: "social",

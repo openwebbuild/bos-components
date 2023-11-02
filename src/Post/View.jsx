@@ -75,6 +75,7 @@ if (!permalink && content) {
 }
 
 const postUrl = `https://${config.gatewayDomain}/${config.ownerId}/widget/Page.Post?accountId=${accountId}&permalink=${permalink}`;
+const editUrl = `/${config.ownerId}/widget/Post.Editor?permalink=${permalink}`;
 
 const item = {
   type: "social",
@@ -100,6 +101,7 @@ const Post = styled.div`
 const Header = styled.div`
   margin-bottom: 0;
   display: inline-flex;
+  width: 100%;
 `;
 
 const Body = styled.div`
@@ -140,6 +142,38 @@ const Comments = styled.div`
   }
 `;
 
+const EditButton = styled.div`
+  margin: 0 0 0 auto;
+  border: 0.5px solid #e3e3e0;
+  background-color: #f3f3f2;
+  height: 46px;
+  width: 46px;
+  border-radius: 50%;
+
+  > div,
+  a {
+    width: 100%;
+    height: 100%;
+  }
+
+  a {
+    color: #1b1b18 !important;
+    background-color: #f3f3f2 !important;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+
+    i {
+      font-size: 18px !important;
+    }
+  }
+
+  button {
+    border-width: 0;
+  }
+`;
+
 return (
   <Post>
     {!props.hideAvatar && (
@@ -173,6 +207,17 @@ return (
             ),
           }}
         />
+        {accountId === context.accountId && (
+          <EditButton>
+            <Widget
+              src={`${config.ownerId}/widget/Post.WriteButton`}
+              props={{
+                link: editUrl,
+                title: "Edit",
+              }}
+            />
+          </EditButton>
+        )}
       </Header>
     )}
 

@@ -55,8 +55,6 @@ const permalink = props.permalink
   ? parsedPermalink === props.permalink && parsedPermalink
   : parsedPermalink;
 
-console.log("permalink", permalink, parsedPermalink);
-
 const content = {
   type: "md",
   image: state.image.cid ? { ipfs_cid: state.image.cid } : undefined,
@@ -64,6 +62,8 @@ const content = {
   title,
   permalink,
 };
+
+const postUrl = `/${config.ownerId}/widget/Page.Post?accountId=${context.accountId}&permalink=${permalink}`;
 
 function extractMentions(text) {
   const mentionRegex =
@@ -142,7 +142,7 @@ function autoCompleteAccountId(id) {
   State.update({ text, showAccountAutocomplete: false });
 }
 
-const TEXT_CACHE_KEY = "text_cache";
+const TEXT_CACHE_KEY = props.permalink ?? "text_cache";
 
 function autoSaveContent(event) {
   Storage.privateSet(TEXT_CACHE_KEY, event.target.value);
@@ -151,7 +151,20 @@ function autoSaveContent(event) {
 function init() {
   if (!state.text) {
     const text = Storage.privateGet(TEXT_CACHE_KEY);
-    if (text) {
+    if (props.permalink) {
+      if (text) {
+        const savedPermalink = parsePermalink(parseTitle(text));
+        if (props.permalink === savedPermalink) {
+          State.update({ text });
+          return;
+        }
+      }
+      if (props.text) {
+        State.update({
+          text: props.text,
+        });
+      }
+    } else if (text) {
       State.update({ text });
     }
   }
@@ -388,6 +401,23 @@ const PreviewWrapper = styled.div`
   overflow-y: auto;
 `;
 
+const LinkPreview = styled.p`
+  font-size: 14px;
+  line-height: 18px;
+  font-weight: 400;
+  color: #687076;
+  pointer-events: none;
+  padding-left: 40px;
+
+  a {
+    color: #000;
+    outline: none;
+    font-weight: 600;
+    pointer-events: auto;
+    text-decoration: underline;
+  }
+`;
+
 const AutoComplete = styled.div`
   position: absolute;
   z-index: 5;
@@ -424,6 +454,21 @@ return (
         </EditorDescription>
       </EditorWrapper>
       <PreviewWrapper class="col">
+        {permalink ? (
+          <LinkPreview>
+            Post will be published to{" "}
+            <a
+              href={postUrl}
+              target="_blank"
+            >{`/${context.accountId}/${permalink}`}</a>
+          </LinkPreview>
+        ) : (
+          <LinkPreview>
+            To publish post with a permanent link, add a title that starts with
+            "# " at the first line.
+          </LinkPreview>
+        )}
+
         <Widget
           src={`${config.ownerId}/widget/Post.View`}
           props={{

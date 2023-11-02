@@ -24,10 +24,50 @@ const ComposeWrapper = styled.div`
   height: 80vh;
 `;
 
+function queryPostByBlockHeight(accountId, blockHeight) {
+  return JSON.parse(
+    Social.get(`${accountId}/post/main`, blockHeight) ?? "null"
+  );
+}
+
+function queryPostByPermalink(accountId, permalink) {
+  const index = {
+    action: "post",
+    key: "main",
+    options: {
+      limit: 50,
+      order: "desc",
+      accountId,
+    },
+  };
+  const posts = Social.index(index.action, index.key, index.options);
+  if (posts) {
+    for (const p of posts) {
+      const content = queryPostByBlockHeight(accountId, p.blockHeight);
+      if (content && content.permalink === permalink) {
+        return {
+          blockHeight: p.blockHeight,
+          ...content,
+        };
+      }
+    }
+  }
+  return null;
+}
+
+const accountId = context.accountId;
+const permalink = props.permalink;
+const content =
+  accountId && permalink ? queryPostByPermalink(accountId, permalink) : null;
+const text = content && content.text;
+
 return (
   <>
     <ComposeWrapper>
-      <Widget src={`${config.ownerId}/widget/Post.Compose`} props={props} />
+      <Widget
+        src={`${config.ownerId}/widget/Post.Compose`}
+        props={{ text, ...props }}
+      />
     </ComposeWrapper>
   </>
 );

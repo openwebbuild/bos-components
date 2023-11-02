@@ -54,6 +54,11 @@ const parsedPermalink = parsePermalink(title);
 const permalink = props.permalink
   ? parsedPermalink === props.permalink && parsedPermalink
   : parsedPermalink;
+const permalinkChanged =
+  props.permalink &&
+  parsedPermalink &&
+  parsedPermalink !== props.permalink &&
+  props.text;
 
 const content = {
   type: "md",
@@ -461,6 +466,15 @@ return (
               href={postUrl}
               target="_blank"
             >{`/${context.accountId}/${permalink}`}</a>
+          </LinkPreview>
+        ) : permalinkChanged ? (
+          <LinkPreview>
+            Modify the post link{" "}
+            <a
+              href={postUrl}
+              target="_blank"
+            >{`/${context.accountId}/${props.permalink}`}</a>{" "}
+            is not allowed.
           </LinkPreview>
         ) : (
           <LinkPreview>

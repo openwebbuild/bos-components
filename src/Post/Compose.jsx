@@ -50,7 +50,12 @@ const autocompleteEnabled = true;
 
 const title = parseTitle(state.text);
 // If the post already exists with the permalink, it's not allowed to change it.
-const permalink = props.permalink || parsePermalink(title);
+const parsedPermalink = parsePermalink(title);
+const permalink = props.permalink
+  ? parsedPermalink === props.permalink && parsedPermalink
+  : parsedPermalink;
+
+console.log("permalink", permalink, parsedPermalink);
 
 const content = {
   type: "md",
@@ -454,7 +459,7 @@ return (
       }
 
       <CommitButton
-        disabled={!state.text}
+        disabled={!state.text || !permalink}
         force
         data={composeData}
         onCommit={onCommit}

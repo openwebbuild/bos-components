@@ -27,7 +27,7 @@ const ComposeWrapper = styled.div`
 return (
   <>
     <ComposeWrapper>
-      <Widget src={`${config.ownerId}/widget/Post.Compose`} />
+      <Widget src={`${config.ownerId}/widget/Post.Compose`} props={props} />
     </ComposeWrapper>
   </>
 );

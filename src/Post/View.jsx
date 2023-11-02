@@ -23,15 +23,53 @@ const config = getConfig(context.networkId);
 
 const accountId = props.accountId;
 const permalink = props.permalink;
-const blockHeight =
+let blockHeight =
   props.blockHeight === "now" ? "now" : parseInt(props.blockHeight);
 const subscribe = !!props.subscribe;
 const notifyAccountId = accountId;
 const postUrl = `https://${config.gatewayDomain}/${config.ownerId}/widget/Page.Post?accountId=${accountId}&blockHeight=${blockHeight}`;
 
+function queryPostByBlockHeight(accountId, blockHeight) {
+  return JSON.parse(
+    Social.get(`${accountId}/post/main`, blockHeight) ?? "null"
+  );
+}
+
+function queryPostByPermalink(accountId, permalink) {
+  const index = {
+    action: "post",
+    key: "main",
+    options: {
+      limit: 50,
+      order: "desc",
+      accountId,
+    },
+  };
+  const posts = Social.index(index.action, index.key, index.options);
+  if (posts) {
+    for (const p of posts) {
+      const content = queryPostByBlockHeight(accountId, p.blockHeight);
+      if (content && content.permalink === permalink) {
+        return {
+          blockHeight: p.blockHeight,
+          ...content,
+        };
+      }
+    }
+  }
+  return null;
+}
+
 const content =
   props.content ??
-  JSON.parse(Social.get(`${accountId}/post/main`, blockHeight) ?? "null");
+  (accountId && permalink
+    ? queryPostByPermalink(accountId, permalink)
+    : accountId && blockHeight
+    ? queryPostByBlockHeight(accountId, blockHeight)
+    : null);
+if (!blockHeight && content) {
+  blockHeight = content.blockHeight;
+}
 
 const item = {
   type: "social",

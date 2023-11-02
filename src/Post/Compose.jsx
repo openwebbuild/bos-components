@@ -43,6 +43,7 @@ State.init({
   text: "",
   title: "",
   permalink: "",
+  published: !!props.text,
 });
 
 const profile = Social.getr(`${context.accountId}/profile`);
@@ -54,11 +55,12 @@ const parsedPermalink = parsePermalink(title);
 const permalink = props.permalink
   ? parsedPermalink === props.permalink && parsedPermalink
   : parsedPermalink;
+const published = !!props.text || state.published;
 const permalinkChanged =
   props.permalink &&
   parsedPermalink &&
   parsedPermalink !== props.permalink &&
-  props.text;
+  published;
 
 const content = {
   type: "md",
@@ -133,6 +135,7 @@ function onCommit() {
   State.update({
     image: {},
     text: "",
+    published: true,
   });
 }
 
@@ -461,7 +464,7 @@ return (
       <PreviewWrapper class="col">
         {permalink ? (
           <LinkPreview>
-            Post will be published to{" "}
+            Post {published ? "has been" : "will be"} published to{" "}
             <a
               href={postUrl}
               target="_blank"

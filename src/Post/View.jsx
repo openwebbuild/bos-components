@@ -207,7 +207,7 @@ return (
             ),
           }}
         />
-        {accountId === context.accountId && (
+        {accountId === context.accountId && permalink && content.permalink && (
           <EditButton>
             <Widget
               src={`${config.ownerId}/widget/Post.WriteButton`}

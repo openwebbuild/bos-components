@@ -49,8 +49,8 @@ function fetchGraphQL(operationsDoc, operationName, variables) {
 
 function createQuery() {
   const indexerQueries = `
-    query QueryPostByPermalink($offset: Int, $limit: Int) {
-      openwebbuild_near_blog_posts(where: { permalink: { _eq: "build-indexers-with-query-api" } }, order_by: { block_height: desc }, offset: $offset, limit: $limit) {
+    query QueryPostByPermalink($permalink: String, $offset: Int, $limit: Int) {
+      openwebbuild_near_blog_posts(where: { permalink: { _eq: $permalink } }, order_by: { block_height: desc }, offset: $offset, limit: $limit) {
         id
         permalink
         content
@@ -71,6 +71,7 @@ function queryPostByPermalink(accountId, permalink) {
       createQuery(sortOption, type),
       "QueryPostByPermalink",
       {
+        permalink,
         offset: 0,
         limit: 1,
       }

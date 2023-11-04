@@ -22,16 +22,130 @@ function getConfig(network) {
 const config = getConfig(context.networkId);
 
 const accountId = props.accountId;
-const permalink = props.permalink;
-const blockHeight =
+let permalink = props.permalink;
+let blockHeight =
   props.blockHeight === "now" ? "now" : parseInt(props.blockHeight);
 const subscribe = !!props.subscribe;
 const notifyAccountId = accountId;
-const postUrl = `https://${config.gatewayDomain}/${config.ownerId}/widget/Page.Post?accountId=${accountId}&blockHeight=${blockHeight}`;
+
+// -- Post Query Helper Functions --
+
+function queryPostByBlockHeight(accountId, blockHeight) {
+  return JSON.parse(
+    Social.get(`${accountId}/post/main`, blockHeight) ?? "null"
+  );
+}
+
+const GRAPHQL_ENDPOINT =
+  props.GRAPHQL_ENDPOINT || "https://near-queryapi.api.pagoda.co";
+
+function fetchGraphQL(operationsDoc, operationName, variables) {
+  return fetch(`${GRAPHQL_ENDPOINT}/v1/graphql`, {
+    method: "POST",
+    headers: { "x-hasura-role": "openwebbuild_near" },
+    body: JSON.stringify({
+      query: operationsDoc,
+      variables: variables,
+      operationName: operationName,
+    }),
+  });
+}
+
+function createQuery() {
+  const indexerQueries = `
+    query QueryPostByPermalink($offset: Int, $limit: Int) {
+      openwebbuild_near_blog_posts(where: { permalink: { _eq: "build-indexers-with-query-api" } }, order_by: { block_height: desc }, offset: $offset, limit: $limit) {
+        id
+        permalink
+        content
+        block_height
+        account_id
+        block_timestamp
+        title
+      }
+    }
+  `;
+  return indexerQueries;
+}
+
+function queryPostByPermalink(accountId, permalink) {
+  if (context.networkId === "mainnet") {
+    // query post with Query API
+    const result = fetchGraphQL(
+      createQuery(sortOption, type),
+      "QueryPostByPermalink",
+      {
+        offset: 0,
+        limit: 1,
+      }
+    );
+    if (result.status === 200 && result.body) {
+      if (result.body.errors) {
+        console.log("error:", result.body.errors);
+      } else {
+        let data = result.body.data;
+        if (data) {
+          const posts = data.openwebbuild_near_blog_posts;
+          if (posts && posts.length > 0) {
+            const p = posts[0];
+            const content = JSON.parse(p.content || null);
+            if (content) {
+              return {
+                blockHeight: p.block_height,
+                ...content,
+              };
+            }
+          }
+        }
+      }
+      return null;
+    }
+  } else {
+    // query post with NEAR Social indexer
+    const index = {
+      action: "post",
+      key: "main",
+      options: {
+        limit: 50,
+        order: "desc",
+        accountId,
+      },
+    };
+    const posts = Social.index(index.action, index.key, index.options);
+    if (posts) {
+      for (const p of posts) {
+        const content = queryPostByBlockHeight(accountId, p.blockHeight);
+        if (content && content.permalink === permalink) {
+          return {
+            blockHeight: p.blockHeight,
+            ...content,
+          };
+        }
+      }
+    }
+    return null;
+  }
+}
+
+// -- End of Post Query Helper Functions --
 
 const content =
   props.content ??
-  JSON.parse(Social.get(`${accountId}/post/main`, blockHeight) ?? "null");
+  (accountId && permalink
+    ? queryPostByPermalink(accountId, permalink)
+    : accountId && blockHeight
+    ? queryPostByBlockHeight(accountId, blockHeight)
+    : null);
+
+if (!blockHeight && content) {
+  blockHeight = content.blockHeight;
+}
+if (!permalink && content) {
+  permalink = content.permalink;
+}
+
+const postUrl = `https://${config.gatewayDomain}/${config.ownerId}/widget/Page.Post?accountId=${accountId}&permalink=${permalink}`;
+const editUrl = `/${config.ownerId}/widget/Post.Editor?permalink=${permalink}`;
 
 const item = {
   type: "social",
@@ -57,6 +171,7 @@ const Post = styled.div`
 const Header = styled.div`
   margin-bottom: 0;
   display: inline-flex;
+  width: 100%;
 `;
 
 const Body = styled.div`
@@ -97,6 +212,38 @@ const Comments = styled.div`
   }
 `;
 
+const EditButton = styled.div`
+  margin: 0 0 0 auto;
+  border: 0.5px solid #e3e3e0;
+  background-color: #f3f3f2;
+  height: 46px;
+  width: 46px;
+  border-radius: 50%;
+
+  > div,
+  a {
+    width: 100%;
+    height: 100%;
+  }
+
+  a {
+    color: #1b1b18 !important;
+    background-color: #f3f3f2 !important;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+
+    i {
+      font-size: 18px !important;
+    }
+  }
+
+  button {
+    border-width: 0;
+  }
+`;
+
 return (
   <Post>
     {!props.hideAvatar && (
@@ -130,6 +277,17 @@ return (
             ),
           }}
         />
+        {accountId === context.accountId && permalink && content.permalink && (
+          <EditButton>
+            <Widget
+              src={`${config.ownerId}/widget/Post.WriteButton`}
+              props={{
+                link: editUrl,
+                title: "Edit",
+              }}
+            />
+          </EditButton>
+        )}
       </Header>
     )}
 

@@ -17,10 +17,12 @@ function getConfig(network) {
 }
 const config = getConfig(context.networkId);
 
+const link = props.link ?? "/write";
+const title = props.title ?? "Write Post";
+
 return (
-  // <a href={`/${config.ownerId}/widget/Post.Editor`}>
-  <a href="/write">
-    <button type="button" className="preview-post-button" title="Write Post">
+  <a href={link}>
+    <button type="button" className="preview-post-button" title={title}>
       <i className="bi bi-pencil" />
     </button>
   </a>

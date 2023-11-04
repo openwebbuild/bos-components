@@ -43,6 +43,7 @@ State.init({
   text: "",
   title: "",
   permalink: "",
+  published: !!props.text,
 });
 
 const profile = Social.getr(`${context.accountId}/profile`);
@@ -50,7 +51,16 @@ const autocompleteEnabled = true;
 
 const title = parseTitle(state.text);
 // If the post already exists with the permalink, it's not allowed to change it.
-const permalink = props.permalink || parsePermalink(title);
+const parsedPermalink = parsePermalink(title);
+const permalink = props.permalink
+  ? parsedPermalink === props.permalink && parsedPermalink
+  : parsedPermalink;
+const published = !!props.text || state.published;
+const permalinkChanged =
+  props.permalink &&
+  parsedPermalink &&
+  parsedPermalink !== props.permalink &&
+  published;
 
 const content = {
   type: "md",
@@ -59,6 +69,8 @@ const content = {
   title,
   permalink,
 };
+
+const postUrl = `/${config.ownerId}/widget/Page.Post?accountId=${context.accountId}&permalink=${permalink}`;
 
 function extractMentions(text) {
   const mentionRegex =
@@ -123,6 +135,7 @@ function onCommit() {
   State.update({
     image: {},
     text: "",
+    published: true,
   });
 }
 
@@ -137,7 +150,7 @@ function autoCompleteAccountId(id) {
   State.update({ text, showAccountAutocomplete: false });
 }
 
-const TEXT_CACHE_KEY = "text_cache";
+const TEXT_CACHE_KEY = props.permalink ?? "text_cache";
 
 function autoSaveContent(event) {
   Storage.privateSet(TEXT_CACHE_KEY, event.target.value);
@@ -146,7 +159,20 @@ function autoSaveContent(event) {
 function init() {
   if (!state.text) {
     const text = Storage.privateGet(TEXT_CACHE_KEY);
-    if (text) {
+    if (props.permalink) {
+      if (text) {
+        const savedPermalink = parsePermalink(parseTitle(text));
+        if (props.permalink === savedPermalink) {
+          State.update({ text });
+          return;
+        }
+      }
+      if (props.text) {
+        State.update({
+          text: props.text,
+        });
+      }
+    } else if (text) {
       State.update({ text });
     }
   }
@@ -383,6 +409,23 @@ const PreviewWrapper = styled.div`
   overflow-y: auto;
 `;
 
+const LinkPreview = styled.p`
+  font-size: 14px;
+  line-height: 18px;
+  font-weight: 400;
+  color: #687076;
+  pointer-events: none;
+  padding-left: 40px;
+
+  a {
+    color: #000;
+    outline: none;
+    font-weight: 600;
+    pointer-events: auto;
+    text-decoration: underline;
+  }
+`;
+
 const AutoComplete = styled.div`
   position: absolute;
   z-index: 5;
@@ -419,6 +462,30 @@ return (
         </EditorDescription>
       </EditorWrapper>
       <PreviewWrapper class="col">
+        {permalink ? (
+          <LinkPreview>
+            Post {published ? "has been" : "will be"} published to{" "}
+            <a
+              href={postUrl}
+              target="_blank"
+            >{`/${context.accountId}/${permalink}`}</a>
+          </LinkPreview>
+        ) : permalinkChanged ? (
+          <LinkPreview>
+            Modify the post link{" "}
+            <a
+              href={postUrl}
+              target="_blank"
+            >{`/${context.accountId}/${props.permalink}`}</a>{" "}
+            is not allowed.
+          </LinkPreview>
+        ) : (
+          <LinkPreview>
+            To publish post with a permanent link, add a title that starts with
+            "# " at the first line.
+          </LinkPreview>
+        )}
+
         <Widget
           src={`${config.ownerId}/widget/Post.View`}
           props={{
@@ -454,7 +521,7 @@ return (
       }
 
       <CommitButton
-        disabled={!state.text}
+        disabled={!state.text || !permalink}
         force
         data={composeData}
         onCommit={onCommit}

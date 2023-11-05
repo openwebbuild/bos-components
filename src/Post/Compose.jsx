@@ -70,7 +70,7 @@ const content = {
   permalink,
 };
 
-const postUrl = `/${config.ownerId}/widget/Page.Post?accountId=${context.accountId}&permalink=${permalink}`;
+const postUrl = `/blog/${context.accountId}/${permalink}`;
 
 function extractMentions(text) {
   const mentionRegex =

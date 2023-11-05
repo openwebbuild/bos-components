@@ -67,16 +67,12 @@ function createQuery() {
 function queryPostByPermalink(accountId, permalink) {
   if (context.networkId === "mainnet") {
     // query post with Query API
-    const result = fetchGraphQL(
-      createQuery(sortOption, type),
-      "QueryPostByPermalink",
-      {
-        accountId,
-        permalink,
-        offset: 0,
-        limit: 1,
-      }
-    );
+    const result = fetchGraphQL(createQuery(), "QueryPostByPermalink", {
+      accountId,
+      permalink,
+      offset: 0,
+      limit: 1,
+    });
     if (result.status === 200 && result.body) {
       if (result.body.errors) {
         console.log("error:", result.body.errors);
